@@ -15,13 +15,13 @@ var dummyArray = [500,600,100,1024,
 var bSocketConnect = false;
 
 //Arudino接続済みの場合はこちらを実行
-var useSeiral = false;
+var useSeiral = true;
+var serialport = require("serialport");
+var SerialPort = require("serialport").SerialPort
 
 if (useSeiral)
 {
   // シリアルポートの設定
-  var serialport = require("serialport");
-  var SerialPort = require("serialport").SerialPort
 
   // シリアルを接続作成
   var serialPort = new SerialPort(
