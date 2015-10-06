@@ -13,6 +13,8 @@ var dummyArray = [500,600,100,1024,
   123,555,155,123];
 
 var bSocketConnect = false;
+
+//Arudino接続済みの場合はこちらを実行
 var useSeiral = false;
 
 if (useSeiral)

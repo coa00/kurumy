@@ -16,16 +16,20 @@ function setup() {
 }
 
 function draw() {
-  background(256);
+  background(32,178,170);
+  // noStroke();
+
   var padding = 100;
   var rad;
   var maxRad = 100;
   var cnt=1;
   var x=0,y=0;
   for(var i=0;i<16;i++){
-      rad = map(serialData[i],0,1024,0,maxRad);
+      rad = map((1024-serialData[i]),0,1024,0,maxRad);
       x = cnt % 4;
       y = Math.floor(i / 4);
+      noStroke();
+      fill(255);
       ellipse(x * maxRad + padding,y * maxRad + padding,rad,rad);
       cnt++;
   }
