@@ -1,43 +1,76 @@
 var express = require('express');
 var app = express();
-
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+//publicを使う
+app.use(express.static('public'));
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
-var serialport = require("serialport");
-var SerialPort = require("serialport").SerialPort
+var dummyArray = [500,600,100,1024,
+  980,888,821,123,
+  123,555,155,123];
 
-var serialPort = new SerialPort("/dev/cu.usbmodem1411", {
-  parser: serialport.parsers.readline("\n"),
-  baudrate: 9600
-});
+var bSocketConnect = false;
+var useSeiral = false;
 
-serialPort.on("open", function () {
-  console.log('open');
-  serialPort.on('data', function(data) {
-    var str = data + "";
-    // sys.puts("here: "+data);
-    console.log(data);
-    var arrayOfStrings = data.split(' ');
-    console.log(arrayOfStrings[15]);
-  });
+if (useSeiral)
+{
+  // シリアルポートの設定
+  var serialport = require("serialport");
+  var SerialPort = require("serialport").SerialPort
 
-  serialPort.on('error', function(err) {
-    console.log('err ' + err);
-  });
+  // シリアルを接続作成
+  var serialPort = new SerialPort(
+    "/dev/cu.usbmodem1411", {
+    parser: serialport.parsers.readline("\n"),
+    baudrate: 9600
+    }
+  );
 
-  setTimeout(function() {
-    serialPort.write("ls\n", function(err, results) {
-      console.log('results ' + results);
+
+  serialPort.on("open", function () {
+    serialPort.on('data', function(data) {
+      var str = data + "";
+      console.log(data);
+
+      //空白で分割して配列に格納
+      var arrayData = data.split(' ');
+      console.log(arrayData);
+      //webSocketに接続済みであれば送信
+      if (bSocketConnect) io.emit('data',arrayData);
     });
-  }, 1000);
-});
+    //接続エラー
+    serialPort.on('error', function(err) {
+      console.log('err ' + err);
+    });
 
+    //タイムアウト
+    setTimeout(function() {
+      serialPort.write("ls\n", function(err, results) {
+        console.log('results ' + results);
+      });
+    }, 1000);
+  });
+}else{
+  setInterval(function (argument) {
+    var dummyArray = [];
+    for (var i=0;i<16;i++){
+      dummyArray.push(Math.random()*1024)
+    }
+    io.emit('data',dummyArray);
+  },1000);
+}
+/**
+webSocketの接続
+**/
+io.sockets.on('connection',function(){
+    //フラグを立てるのみ
+    bSocketConnect = true;
+  }
+);
 
-var server = app.listen(3000, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log('Example app listening at http://%s:%s', host, port);
+http.listen(3000, function(){
+  console.log('listening on *:',process.env.PORT || 3000);
 });
