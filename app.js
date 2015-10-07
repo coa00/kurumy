@@ -25,7 +25,7 @@ if (useSeiral)
 
   // シリアルを接続作成
   var serialPort = new SerialPort(
-    "/dev/cu.usbmodem1411", {
+    "/dev/cu.usbmodem1421", {
     parser: serialport.parsers.readline("\n"),
     baudrate: 9600
     }
