@@ -59,7 +59,8 @@ if (useSeiral)
   setInterval(function (argument) {
     var dummyArray = [];
     for (var i=0;i<16;i++){
-      dummyArray.push(Math.random()*1024)
+      //dummyArray.push(Math.random()*1024)
+      dummyArray.push(1024)
     }
     io.emit('data',dummyArray);
   },1000);
